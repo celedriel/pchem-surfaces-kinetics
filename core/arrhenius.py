@@ -11,10 +11,8 @@ class CineticaArrhenius(BaseAnalise):
         super().__init__(df_raw)
         
     def process_data(self) -> pd.DataFrame:
-        colunas_necessarias = ['Temperatura (K)', 'Tempo (s)']
-        for col in colunas_necessarias:
-            if col not in self.df.columns:
-                raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+   
+        self.validate_columns(['Temperatura (K)', 'Tempo (s)'])
                 
         len_antes = len(self.df)
         self.df = self.df[(self.df['Temperatura (K)'] > 0) & (self.df['Tempo (s)'] > 0)].copy()
