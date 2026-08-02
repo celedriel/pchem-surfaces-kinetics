@@ -12,6 +12,11 @@ class IsotermaAdsorcao(BaseAnalise):
         self.titrant_conc = titrant_conc
         
     def process_data(self) -> pd.DataFrame:
+        colunas_necessarias = ['Massa_Carvao', 'Vol_Total', 'Conc_Inicial', 'Vol_Aliquota', 'Vol_Gasto']
+        for col in colunas_necessarias:
+            if col not in self.df.columns:
+                raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+                
         self.df['Conc_Final'] = (self.df['Vol_Gasto'] * self.titrant_conc) / self.df['Vol_Aliquota']
         self.df['X_Adsorvido'] = (self.df['Conc_Inicial'] - self.df['Conc_Final']) * (self.df['Vol_Total'] / 1000) * self.molar_mass
         self.df['X_m'] = self.df['X_Adsorvido'] / self.df['Massa_Carvao']
@@ -27,7 +32,6 @@ class IsotermaAdsorcao(BaseAnalise):
         return self.df
         
     def fit_model(self, model_name: str) -> Dict[str, Any]:
-        """Realiza a regressão linear para o modelo de Freundlich ou Langmuir."""
         if len(self.df) < 3:
             return {"erro": "Insuficiência de dados: o modelo exige pelo menos 3 pontos experimentais válidos após a filtragem."}
             
@@ -50,8 +54,9 @@ class IsotermaAdsorcao(BaseAnalise):
                     
             elif model_name == "Langmuir":
                 reg = linregress(self.df['Conc_Final'], self.df['Ce_sobre_xm'])
-                q_max = 1 / reg.slope if reg.slope != 0 else 0
-                k_l = reg.slope / reg.intercept if reg.intercept != 0 else 0
+                
+                q_max = 1 / reg.slope if reg.slope > 0 else None
+                k_l = (reg.slope / reg.intercept) if (reg.intercept != 0 and reg.slope > 0) else None
                 
                 self.results = {
                     'q_max': q_max,
@@ -62,7 +67,7 @@ class IsotermaAdsorcao(BaseAnalise):
                 }
                 
                 if reg.slope <= 0:
-                     self.results['aviso'] = "Atenção: A inclinação é nula ou negativa. O modelo de Langmuir pode não ser aplicável."
+                     self.results['aviso'] = "Atenção: A inclinação é nula ou negativa. O modelo de Langmuir não é aplicável e q_max foi invalidado."
                 elif abs(reg.intercept) < 1e-10:
                     self.results['aviso'] = "Intercepto próximo de zero. Verifique a validade do modelo de Langmuir."
                     
