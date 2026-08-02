@@ -6,10 +6,8 @@ from core.arrhenius import CineticaArrhenius
 from core.ordem import OrdemReacao
 
 st.set_page_config(page_title="FQ: Superfícies e Cinética", layout="wide")
-
 st.title("Físico-Química de Superfícies e Cinética")
 
-# Botão de reset UX
 if st.sidebar.button("Restaurar Dados Padrão"):
     st.session_state.clear()
     st.rerun()
@@ -34,7 +32,6 @@ if modulo == "Isotermas de Adsorção":
         conc_titulante = st.number_input("Concentração do Titulante (mol/L)", min_value=0.001, value=0.1)
 
     st.subheader("Tabela de Dados Experimentais")
-    
     if 'df_iso' not in st.session_state:
         st.session_state.df_iso = pd.DataFrame({
             "Amostra": [1, 2, 3, 4], "Massa_Carvao": [0.5, 0.5, 0.5, 0.5],
@@ -42,12 +39,7 @@ if modulo == "Isotermas de Adsorção":
             "Vol_Aliquota": [10.0, 10.0, 10.0, 10.0], "Vol_Gasto": [8.5, 3.8, 1.6, 0.6]
         })
     
-    df_editado_iso = st.data_editor(
-        st.session_state.df_iso, 
-        num_rows="dynamic", 
-        key="editor_iso",
-        width="stretch"
-    )
+    df_editado_iso = st.data_editor(st.session_state.df_iso, num_rows="dynamic", key="editor_iso", width="stretch")
 
     if st.button("Processar Dados", type="primary"):
         with st.spinner("Modelando isoterma..."):
@@ -64,27 +56,7 @@ if modulo == "Isotermas de Adsorção":
                 else:
                     grafico = analise.plot_graph(modelo_escolhido)
                     st.success(f"Análise concluída usando o modelo de **{modelo_escolhido}**!")
-                    
-                    if "aviso" in parametros:
-                        st.warning(parametros["aviso"])
-                    
-                    col_res1, col_res2 = st.columns(2)
-                    with col_res1:
-                        st.write("### Constantes Calculadas")
-                        if modelo_escolhido == "Freundlich":
-                            st.write(f"**K:** {parametros['K']:.4f}")
-                            st.write(f"**n:** {parametros['n']:.4f}")
-                        elif modelo_escolhido == "Langmuir":
-                            st.write(f"**$q_{{max}}$:** {parametros['q_max']:.4f} g/g")
-                            st.write(f"**$K_L$:** {parametros['K_L']:.4f} L/mol")
-                        st.write(f"**$R^2$:** {parametros['R2']:.4f}")
-                    with col_res2:
-                        st.pyplot(grafico)
-                        utils.close_plot(grafico)
-                    
-                    with st.expander("Ver Matriz de Cálculos Completa"):
-                        st.dataframe(df_resultados)
-                        utils.render_download_button(df_resultados, "isotermas_resultados.csv")
+                    utils.renderizar_resultados(modulo, parametros, grafico, df_resultados, "isotermas_resultados.csv", modelo_escolhido)
             else:
                 st.error("Erro: Preencha a tabela com valores válidos. Nenhuma linha restou após a filtragem.")
 
@@ -101,12 +73,7 @@ elif modulo == "Cinética (Arrhenius)":
             "Tempo (s)": [125.0, 64.0, 33.0, 17.0]
         })
     
-    df_editado_arr = st.data_editor(
-        st.session_state.df_arr, 
-        num_rows="dynamic", 
-        key="editor_arr",
-        width="stretch"
-    )
+    df_editado_arr = st.data_editor(st.session_state.df_arr, num_rows="dynamic", key="editor_arr", width="stretch")
     
     if st.button("Processar Dados", type="primary"):
         with st.spinner("Ajustando dependência térmica..."):
@@ -127,20 +94,7 @@ elif modulo == "Cinética (Arrhenius)":
                 else:
                     grafico = analise.plot_graph()
                     st.success("Análise de Arrhenius concluída!")
-                    
-                    col_res1, col_res2 = st.columns(2)
-                    with col_res1:
-                        st.write("### Parâmetros Cinéticos")
-                        st.write(f"**Energia de Ativação ($E_a$):** {parametros['Ea_J']:.2f} J/mol ({parametros['Ea_kJ']:.2f} kJ/mol)")
-                        st.write(rf"**Fator de Frequência ($\ln A$):** {parametros['ln_A']:.4f}")
-                        st.write(f"**$R^2$:** {parametros['R2']:.4f}")
-                    with col_res2:
-                        st.pyplot(grafico)
-                        utils.close_plot(grafico)
-                        
-                    with st.expander("Ver Matriz de Cálculos Completa"):
-                        st.dataframe(df_resultados)
-                        utils.render_download_button(df_resultados, "arrhenius_resultados.csv")
+                    utils.renderizar_resultados(modulo, parametros, grafico, df_resultados, "arrhenius_resultados.csv")
             else:
                 st.error("Nenhuma linha restou após a filtragem.")
 
@@ -157,12 +111,7 @@ elif modulo == "Ordem de Reação":
             "[H2O2] (mol/L)": [0.082, 0.067, 0.055, 0.045, 0.037]
         })
     
-    df_editado_ord = st.data_editor(
-        st.session_state.df_ord, 
-        num_rows="dynamic", 
-        key="editor_ord",
-        width="stretch"
-    )
+    df_editado_ord = st.data_editor(st.session_state.df_ord, num_rows="dynamic", key="editor_ord", width="stretch")
     
     if st.button("Processar Dados", type="primary"):
         with st.spinner("Convergindo regressões não-lineares..."):
@@ -178,23 +127,7 @@ elif modulo == "Ordem de Reação":
                     st.error(f"Falha no ajuste das curvas: {parametros['erro']}")
                 else:
                     grafico = analise.plot_graph()
-                    st.success(f"De acordo com o MSE na escala real, a reação é de **{parametros['best_fit']}**.")
-                    
-                    col_res1, col_res2 = st.columns(2)
-                    with col_res1:
-                        st.write("### Ajuste 1ª Ordem")
-                        st.write(f"**Constante (k):** {parametros['1a_ordem']['k']:.5f}")
-                        st.write(f"**MSE (Erro):** {parametros['1a_ordem']['MSE']:.2e}")
-                    with col_res2:
-                        st.write("### Ajuste 2ª Ordem")
-                        st.write(f"**Constante (k):** {parametros['2a_ordem']['k']:.5f}")
-                        st.write(f"**MSE (Erro):** {parametros['2a_ordem']['MSE']:.2e}")
-                        
-                    st.pyplot(grafico)
-                    utils.close_plot(grafico)
-                    
-                    with st.expander("Ver Matriz de Cálculos Completa"):
-                        st.dataframe(df_resultados)
-                        utils.render_download_button(df_resultados, "ordem_reacao_resultados.csv")
+                    st.success(f"De acordo com o MSE na escala real, a reação é de **{parametros.get('best_fit')}**.")
+                    utils.renderizar_resultados(modulo, parametros, grafico, df_resultados, "ordem_reacao_resultados.csv")
             else:
                 st.error("Erro: Verifique se os dados são válidos. Nenhuma linha restou.")
