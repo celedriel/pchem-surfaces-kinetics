@@ -31,34 +31,36 @@ class OrdemReacao(BaseAnalise):
         c = self.df[self.col_c].values
         p0_guess = [c[0], 0.001]
         
-        
+        erros_convergencia = []
+       
         try:
             popt1, _ = curve_fit(func_1a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred1 = func_1a_ordem(t, *popt1)
             mse1 = np.mean((c - c_pred1)**2)
             self.results['1a_ordem'] = {'C0': popt1[0], 'k': popt1[1], 'MSE': mse1}
-        except Exception:
-            pass 
+        except (RuntimeError, ValueError) as e:
+            erros_convergencia.append(f"1ª Ordem: {str(e)}")
             
-       
+        
         try:
             popt2, _ = curve_fit(func_2a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred2 = func_2a_ordem(t, *popt2)
             mse2 = np.mean((c - c_pred2)**2)
             self.results['2a_ordem'] = {'C0': popt2[0], 'k': popt2[1], 'MSE': mse2}
-        except Exception:
-            pass 
+        except (RuntimeError, ValueError) as e:
+            erros_convergencia.append(f"2ª Ordem: {str(e)}")
             
-      
+       
         if '1a_ordem' not in self.results and '2a_ordem' not in self.results:
-            return {"erro": "Falha na convergência matemática para ambos os modelos exponenciais."}
+            return {"erro": f"Falha na convergência matemática geral. Detalhes: {' | '.join(erros_convergencia)}"}
             
+        
         if '1a_ordem' in self.results and '2a_ordem' in self.results:
             self.results['best_fit'] = "1ª Ordem" if self.results['1a_ordem']['MSE'] < self.results['2a_ordem']['MSE'] else "2ª Ordem"
         elif '1a_ordem' in self.results:
-            self.results['best_fit'] = "1ª Ordem (Modelo de 2ª Ordem falhou)"
+            self.results['best_fit'] = "1ª Ordem (2ª Ordem falhou na convergência)"
         else:
-            self.results['best_fit'] = "2ª Ordem (Modelo de 1ª Ordem falhou)"
+            self.results['best_fit'] = "2ª Ordem (1ª Ordem falhou na convergência)"
             
         return self.results
         
@@ -73,9 +75,13 @@ class OrdemReacao(BaseAnalise):
             c_fit1 = func_1a_ordem(t_smooth, self.results['1a_ordem']['C0'], self.results['1a_ordem']['k'])
             ax1.plot(t, c, 'ro', label='Experimental')
             ax1.plot(t_smooth, c_fit1, 'k-', label=f"Fit 1ª Ordem\nMSE: {self.results['1a_ordem']['MSE']:.2e}")
+            ax1.set_title('Ajuste Não-Linear: 1ª Ordem')
+        else:
+            ax1.text(0.5, 0.5, "Ajuste Indisponível\n(Falha de Convergência)", horizontalalignment='center', verticalalignment='center', transform=ax1.transAxes, color='red', fontsize=12)
+            ax1.set_title('Ajuste Não-Linear: 1ª Ordem (Falha)')
+            
         ax1.set_xlabel('Tempo (s)')
         ax1.set_ylabel('[H2O2] (mol/L)')
-        ax1.set_title('Ajuste Não-Linear: 1ª Ordem')
         ax1.legend()
         ax1.grid(True, linestyle='--', alpha=0.6)
         
@@ -83,9 +89,13 @@ class OrdemReacao(BaseAnalise):
             c_fit2 = func_2a_ordem(t_smooth, self.results['2a_ordem']['C0'], self.results['2a_ordem']['k'])
             ax2.plot(t, c, 'bo', label='Experimental')
             ax2.plot(t_smooth, c_fit2, 'k--', label=f"Fit 2ª Ordem\nMSE: {self.results['2a_ordem']['MSE']:.2e}")
+            ax2.set_title('Ajuste Não-Linear: 2ª Ordem')
+        else:
+            ax2.text(0.5, 0.5, "Ajuste Indisponível\n(Falha de Convergência)", horizontalalignment='center', verticalalignment='center', transform=ax2.transAxes, color='red', fontsize=12)
+            ax2.set_title('Ajuste Não-Linear: 2ª Ordem (Falha)')
+            
         ax2.set_xlabel('Tempo (s)')
         ax2.set_ylabel('[H2O2] (mol/L)')
-        ax2.set_title('Ajuste Não-Linear: 2ª Ordem')
         ax2.legend()
         ax2.grid(True, linestyle='--', alpha=0.6)
         
