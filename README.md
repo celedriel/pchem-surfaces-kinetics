@@ -47,11 +47,11 @@ ___
 > [!TIP]
 > **Módulos de Análise / Analysis Modules:** O aplicativo foi dividido em três grandes módulos matemáticos para facilitar o processamento dos dados experimentais brutos.
 > 
-> | **Isotermas de Adsorção:** | **Cinética (Arrhenius):** |
+> | **Isotermas de Adsorção / Adsorption Isotherms:** | **Cinética / Kinetics (Arrhenius):** |
 > | :--- | :--- |
-> | Compara o R² entre os modelos de monocamada (Langmuir) e multicamadas (Freundlich). | Calcula a Energia de Ativação ($E_a$) e o Fator de Frequência ($\ln A$) da reação. |
-> | **Ordem de Reação:** | **Tratamento Estatístico:** |
-> | Determina automaticamente se a reação segue a 1ª ou a 2ª ordem com base no Erro Residual (SQE). | Gera matrizes de cálculo e regressões lineares utilizando a biblioteca SciPy. |
+> | Compara o R² entre os modelos de monocamada (Langmuir) e multicamadas (Freundlich).<br>Compares R² between monolayer (Langmuir) and multilayer (Freundlich) models. | Calcula a Energia de Ativação ($E_a$) e o Fator de Frequência ($\ln A$) da reação.<br>Calculates Activation Energy ($E_a$) and Frequency Factor. |
+> | **Ordem de Reação / Reaction Order:** | **Tratamento Estatístico/ Statistical Treatment:** |
+> | Determina automaticamente se a reação segue a 1ª ou a 2ª ordem com base no Erro Residual (SQE).<br>Automatically determines 1st or 2nd order based on Residual Sum of Squares (SSE). | Gera matrizes de cálculo e regressões lineares utilizando a biblioteca SciPy.<br>Generates calculation matrices and linear regressions using the SciPy library. |
 
 ____
 
