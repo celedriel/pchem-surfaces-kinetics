@@ -27,19 +27,27 @@ class IsotermaAdsorcao(BaseAnalise):
         return self.df
         
     def fit_model(self, model_name: str) -> Dict[str, Any]:
+        """Realiza a regressão linear para o modelo de Freundlich ou Langmuir."""
         if len(self.df) < 3:
             return {"erro": "Insuficiência de dados: o modelo exige pelo menos 3 pontos experimentais válidos após a filtragem."}
+            
+        if model_name not in ["Freundlich", "Langmuir"]:
+            return {"erro": f"Modelo matemático '{model_name}' não é suportado."}
             
         try:
             if model_name == "Freundlich":
                 reg = linregress(self.df['log_C'], self.df['log_xm'])
+                n_val = 1 / reg.slope if reg.slope != 0 else None
                 self.results = {
-                    'n': 1 / reg.slope if reg.slope != 0 else np.inf,
+                    'n': n_val,
                     'K': 10**reg.intercept,
                     'R2': reg.rvalue**2,
                     'slope': reg.slope,
                     'intercept': reg.intercept
                 }
+                if n_val is None:
+                    self.results['aviso'] = "Atenção: A inclinação da reta de Freundlich é zero, resultando em 'n' indefinido."
+                    
             elif model_name == "Langmuir":
                 reg = linregress(self.df['Conc_Final'], self.df['Ce_sobre_xm'])
                 q_max = 1 / reg.slope if reg.slope != 0 else 0
@@ -54,7 +62,7 @@ class IsotermaAdsorcao(BaseAnalise):
                 }
                 
                 if reg.slope <= 0:
-                     self.results['aviso'] = "Atenção: A inclinação é nula ou negativa. O modelo de Langmuir pode não ser aplicável a estes dados, pois a capacidade máxima de adsorção (q_max) resultaria negativa."
+                     self.results['aviso'] = "Atenção: A inclinação é nula ou negativa. O modelo de Langmuir pode não ser aplicável."
                 elif abs(reg.intercept) < 1e-10:
                     self.results['aviso'] = "Intercepto próximo de zero. Verifique a validade do modelo de Langmuir."
                     
