@@ -2,16 +2,16 @@ import numpy as np
 import pandas as pd
 from scipy.stats import linregress
 import matplotlib.pyplot as plt
+from typing import Dict, Any
+from .base import BaseAnalise
 
-class IsotermaAdsorcao:
-    def __init__(self, df_raw, molar_mass, titrant_conc):
-        self.df = df_raw.copy()
+class IsotermaAdsorcao(BaseAnalise):
+    def __init__(self, df_raw: pd.DataFrame, molar_mass: float, titrant_conc: float) -> None:
+        super().__init__(df_raw)
         self.molar_mass = molar_mass
         self.titrant_conc = titrant_conc
-        self.results = {}
-        self.linhas_descartadas = 0
         
-    def process_data(self):
+    def process_data(self) -> pd.DataFrame:
         self.df['Conc_Final'] = (self.df['Vol_Gasto'] * self.titrant_conc) / self.df['Vol_Aliquota']
         self.df['X_Adsorvido'] = (self.df['Conc_Inicial'] - self.df['Conc_Final']) * (self.df['Vol_Total'] / 1000) * self.molar_mass
         self.df['X_m'] = self.df['X_Adsorvido'] / self.df['Massa_Carvao']
@@ -26,7 +26,10 @@ class IsotermaAdsorcao:
         
         return self.df
         
-    def fit_model(self, model_name):
+    def fit_model(self, model_name: str) -> Dict[str, Any]:
+        if self.df.empty:
+            return {"erro": "Sem dados suficientes após a filtragem."}
+            
         try:
             if model_name == "Freundlich":
                 reg = linregress(self.df['log_C'], self.df['log_xm'])
@@ -51,13 +54,13 @@ class IsotermaAdsorcao:
                 }
                 
                 if abs(reg.intercept) < 1e-10:
-                    self.results['aviso'] = "Intercepto próximo de zero. Verifique se o modelo Langmuir é aplicável a estes dados."
+                    self.results['aviso'] = "Intercepto próximo de zero. Verifique a validade do modelo de Langmuir."
                     
             return self.results
         except Exception as e:
             return {"erro": str(e)}
-        
-    def plot_graph(self, model_name):
+            
+    def plot_graph(self, model_name: str):
         fig, ax = plt.subplots(figsize=(8, 5))
         
         if model_name == "Freundlich":
