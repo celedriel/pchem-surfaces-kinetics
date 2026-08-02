@@ -10,15 +10,12 @@ class BaseAnalise(ABC):
 
     @abstractmethod
     def process_data(self) -> pd.DataFrame:
-        """Filtra dados inválidos e retorna o DataFrame processado."""
         pass
 
     @abstractmethod
     def fit_model(self, *args, **kwargs) -> Dict[str, Any]:
-        """Realiza a regressão matemática e retorna o dicionário de resultados."""
         pass
 
     @abstractmethod
     def plot_graph(self, *args, **kwargs):
-        """Gera e retorna a figura (gráfico) do Matplotlib."""
         pass
