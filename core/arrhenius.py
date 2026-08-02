@@ -4,6 +4,7 @@ from scipy.stats import linregress
 import matplotlib.pyplot as plt
 from typing import Dict, Any
 from .base import BaseAnalise
+import utils 
 
 class CineticaArrhenius(BaseAnalise):
     def __init__(self, df_raw: pd.DataFrame) -> None:
@@ -26,7 +27,7 @@ class CineticaArrhenius(BaseAnalise):
             
         try:
             reg = linregress(self.df['1/T'], self.df['ln(k)'])
-            ea_j = -reg.slope * 8.314
+            ea_j = -reg.slope * utils.CONSTANTE_R_GASES 
             
             self.results = {
                 'Ea_J': ea_j,
@@ -36,6 +37,11 @@ class CineticaArrhenius(BaseAnalise):
                 'slope': reg.slope,
                 'intercept': reg.intercept
             }
+            
+            
+            if reg.slope > 0:
+                 self.results['aviso'] = "Atenção: A inclinação (slope) é positiva, resultando em uma Energia de Ativação negativa. Verifique os dados, pois isso aponta uma anomalia termodinâmica."
+                 
             return self.results
         except Exception as e:
             return {"erro": str(e)}
