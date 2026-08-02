@@ -27,8 +27,8 @@ class IsotermaAdsorcao(BaseAnalise):
         return self.df
         
     def fit_model(self, model_name: str) -> Dict[str, Any]:
-        if self.df.empty:
-            return {"erro": "Sem dados suficientes após a filtragem."}
+        if len(self.df) < 3:
+            return {"erro": "Insuficiência de dados: o modelo exige pelo menos 3 pontos experimentais válidos após a filtragem."}
             
         try:
             if model_name == "Freundlich":
@@ -53,7 +53,9 @@ class IsotermaAdsorcao(BaseAnalise):
                     'intercept': reg.intercept
                 }
                 
-                if abs(reg.intercept) < 1e-10:
+                if reg.slope <= 0:
+                     self.results['aviso'] = "Atenção: A inclinação é nula ou negativa. O modelo de Langmuir pode não ser aplicável a estes dados, pois a capacidade máxima de adsorção (q_max) resultaria negativa."
+                elif abs(reg.intercept) < 1e-10:
                     self.results['aviso'] = "Intercepto próximo de zero. Verifique a validade do modelo de Langmuir."
                     
             return self.results
