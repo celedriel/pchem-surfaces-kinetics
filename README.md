@@ -13,6 +13,14 @@
 
 <div align="center">
 
+<a href="https://pchemsk.streamlit.app/" target="_blank">
+  <img src="https://img.shields.io/badge/Web_App-Clique_Aqui!-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Acessar Web App">
+</a>
+
+</div>
+
+<div align="center">
+
 <a href="#">![badge](https://img.shields.io/badge/Made_by-celedriel-262622?style=for-the-badge&logo=github&logoColor=262622&logoSize=auto&color=4CAF50) </a>
 <a href="https://streamlit.io/">![badge](https://img.shields.io/badge/Platform-Streamlit-262622?style=for-the-badge&logo=streamlit&logoColor=262622&logoSize=auto&color=FF4B4B) </a>
 <a href="https://www.python.org/">![badge](https://img.shields.io/badge/Code-Python-262622?style=for-the-badge&logo=python&logoColor=262622&logoSize=auto&color=3776AB) </a>
