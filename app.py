@@ -15,7 +15,6 @@ modulo = st.sidebar.radio(
 )
 
 
-
 def render_download_button(df, filename):
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button(
@@ -41,7 +40,6 @@ if modulo == "Isotermas de Adsorção":
 
     st.subheader("Tabela de Dados Experimentais")
     
-
     if 'df_iso' not in st.session_state:
         st.session_state.df_iso = pd.DataFrame({
             "Amostra": [1, 2, 3, 4], "Massa_Carvao": [0.5, 0.5, 0.5, 0.5],
@@ -49,8 +47,8 @@ if modulo == "Isotermas de Adsorção":
             "Vol_Aliquota": [10.0, 10.0, 10.0, 10.0], "Vol_Gasto": [8.5, 3.8, 1.6, 0.6]
         })
     
+
     df_editado_iso = st.data_editor(st.session_state.df_iso, num_rows="dynamic", key="editor_iso")
-    st.session_state.df_iso = df_editado_iso
 
     if st.button("Processar Dados", type="primary"):
         analise = IsotermaAdsorcao(df_editado_iso, massa_molar, conc_titulante)
@@ -66,6 +64,10 @@ if modulo == "Isotermas de Adsorção":
             else:
                 grafico = analise.plot_graph(modelo_escolhido)
                 st.success(f"Análise concluída usando o modelo de **{modelo_escolhido}**!")
+                
+     
+                if "aviso" in parametros:
+                    st.warning(parametros["aviso"])
                 
                 col_res1, col_res2 = st.columns(2)
                 with col_res1:
@@ -100,8 +102,8 @@ elif modulo == "Cinética (Arrhenius)":
             "Tempo (s)": [125.0, 64.0, 33.0, 17.0]
         })
     
+
     df_editado_arr = st.data_editor(st.session_state.df_arr, num_rows="dynamic", key="editor_arr")
-    st.session_state.df_arr = df_editado_arr
     
     if st.button("Processar Dados", type="primary"):
         if (df_editado_arr['Temperatura (K)'] <= 0).any() or (df_editado_arr['Tempo (s)'] <= 0).any():
@@ -129,7 +131,7 @@ elif modulo == "Cinética (Arrhenius)":
             render_download_button(df_resultados, "arrhenius_resultados.csv")
 
 
-# MÓDULO 3: ORDEM DE REAÇÃO 
+# MÓDULO 3: ORDEM DE REAÇÃO (Não-Linear)
 
 elif modulo == "Ordem de Reação":
     st.header("Determinação da Ordem")
@@ -142,7 +144,6 @@ elif modulo == "Ordem de Reação":
         })
     
     df_editado_ord = st.data_editor(st.session_state.df_ord, num_rows="dynamic", key="editor_ord")
-    st.session_state.df_ord = df_editado_ord
     
     if st.button("Processar Dados", type="primary"):
         analise = OrdemReacao(df_editado_ord)
