@@ -30,7 +30,7 @@
 
 | Módulo 3: Ordem de Reação |
 | :---: |
-| <img width="900" alt="o reação" src="https://github.com/user-attachments/assets/7f7b1d3c-c58e-496a-9c1a-6a36a0f1fd5d" />"|
+| <img width="900" alt="o reação" src="https://github.com/user-attachments/assets/7f7b1d3c-c58e-496a-9c1a-6a36a0f1fd5d" /> |
 
 
 ### Resultados e Gráficos / Results and Graphs
