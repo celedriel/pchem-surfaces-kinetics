@@ -41,6 +41,7 @@ class IsotermaAdsorcao:
                 reg = linregress(self.df['Conc_Final'], self.df['Ce_sobre_xm'])
                 q_max = 1 / reg.slope if reg.slope != 0 else 0
                 k_l = reg.slope / reg.intercept if reg.intercept != 0 else 0
+                
                 self.results = {
                     'q_max': q_max,
                     'K_L': k_l,
@@ -48,6 +49,10 @@ class IsotermaAdsorcao:
                     'slope': reg.slope,
                     'intercept': reg.intercept
                 }
+                
+                if abs(reg.intercept) < 1e-10:
+                    self.results['aviso'] = "Intercepto próximo de zero. Verifique se o modelo Langmuir é aplicável a estes dados."
+                    
             return self.results
         except Exception as e:
             return {"erro": str(e)}
