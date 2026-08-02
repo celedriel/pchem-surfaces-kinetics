@@ -30,7 +30,8 @@
 
 | Módulo 3: Ordem de Reação |
 | :---: |
-| <img width="900" alt="o reação" src="https://github.com/user-attachments/assets/a81975e0-11b0-471a-a6b4-3964107cbe45" /> |
+| <img width="900" alt="o reação" src="https://github.com/user-attachments/assets/7f7b1d3c-c58e-496a-9c1a-6a36a0f1fd5d" />"|
+
 
 ### Resultados e Gráficos / Results and Graphs
 
@@ -40,7 +41,7 @@
 
 | Cinética (Arrhenius) | Ordem de Reação (1ª e 2ª Ordem) |
 | :---: | :---: |
-| <img width="450" alt="arrheniusexemp" src="https://github.com/user-attachments/assets/7365155e-1434-49cb-a919-d10cde97f94e" /> | <img width="450" alt="o reaçãoexemp1" src="https://github.com/user-attachments/assets/70835bb7-e709-48e3-aed1-8c7b20086173" /><br><br><img width="450" alt="o reaçãoexemp2" src="https://github.com/user-attachments/assets/9dcc5354-cb2c-49e9-8b4a-7f93cc889774" /> |
+|<img width="450" alt="arrheniusexemp" src="https://github.com/user-attachments/assets/7365155e-1434-49cb-a919-d10cde97f94e" /> | <img width="450" alt="o reaçãoexemp1" src="https://github.com/user-attachments/assets/d5ddf8a0-44b5-48b0-bf80-8047976bcbbf" />
 
 ___
 
@@ -51,7 +52,7 @@ ___
 > | :--- | :--- |
 > | Compara o R² entre os modelos de monocamada (Langmuir) e multicamadas (Freundlich).<br>Compares R² between monolayer (Langmuir) and multilayer (Freundlich) models. | Calcula a Energia de Ativação ($E_a$) e o Fator de Frequência ($\ln A$) da reação.<br>Calculates Activation Energy ($E_a$) and Frequency Factor. |
 > | **Ordem de Reação / Reaction Order:** | **Tratamento Estatístico/ Statistical Treatment:** |
-> | Determina automaticamente se a reação segue a 1ª ou a 2ª ordem com base no Erro Residual (SQE).<br>Automatically determines 1st or 2nd order based on Residual Sum of Squares (SSE). | Gera matrizes de cálculo e regressões lineares utilizando a biblioteca SciPy.<br>Generates calculation matrices and linear regressions using the SciPy library. |
+> | Determina automaticamente a ordem da reação utilizando ajuste não-linear e Erro Quadrático Médio (MSE).<br>Automatically determines reaction order using non-linear curve fitting and Mean Squared Error (MSE). | Gera matrizes, regressões lineares e ajustes não-lineares utilizando a biblioteca SciPy.<br>Generates matrices, linear regressions, and non-linear curve fitting using the SciPy library.|
 
 ____
 
@@ -72,7 +73,7 @@ Follow the step-by-step guide below to run the dashboard on your machine:
 **1. Open your terminal and clone this project to your local machine.**
 
 ```bash
-   git clone [https://github.com/celedriel/pchem-surfaces-kinetics.git](https://github.com/celedriel/pchem-surfaces-kinetics.git)
+git clone [https://github.com/celedriel/pchem-surfaces-kinetics.git](https://github.com/celedriel/pchem-surfaces-kinetics.git)
 ```
 **2. Navigate to the project directory.**
 
