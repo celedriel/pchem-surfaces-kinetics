@@ -12,10 +12,8 @@ class IsotermaAdsorcao(BaseAnalise):
         self.titrant_conc = titrant_conc
         
     def process_data(self) -> pd.DataFrame:
-        colunas_necessarias = ['Massa_Carvao', 'Vol_Total', 'Conc_Inicial', 'Vol_Aliquota', 'Vol_Gasto']
-        for col in colunas_necessarias:
-            if col not in self.df.columns:
-                raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+        
+        self.validate_columns(['Massa_Carvao', 'Vol_Total', 'Conc_Inicial', 'Vol_Aliquota', 'Vol_Gasto'])
                 
         self.df['Conc_Final'] = (self.df['Vol_Gasto'] * self.titrant_conc) / self.df['Vol_Aliquota']
         self.df['X_Adsorvido'] = (self.df['Conc_Inicial'] - self.df['Conc_Final']) * (self.df['Vol_Total'] / 1000) * self.molar_mass
