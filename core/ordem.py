@@ -3,7 +3,6 @@ import pandas as pd
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-
 def func_1a_ordem(t, C0, k):
     return C0 * np.exp(-k * t)
 
@@ -25,19 +24,18 @@ class OrdemReacao:
         t = self.df[self.col_t].values
         c = self.df[self.col_c].values
         
-  
         p0_guess = [c[0], 0.001]
         
         try:
-            # Fit 1ª Ordem
-            popt1, _ = curve_fit(func_1a_ordem, t, c, p0=p0_guess, maxfev=10000)
+            # Fit 1ª Ordem 
+            popt1, _ = curve_fit(func_1a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred1 = func_1a_ordem(t, *popt1)
-            mse1 = np.mean((c - c_pred1)**2)  # Cálculo do MSE via NumPy
+            mse1 = np.mean((c - c_pred1)**2)
             
-            # Fit 2ª Ordem
-            popt2, _ = curve_fit(func_2a_ordem, t, c, p0=p0_guess, maxfev=10000)
+            # Fit 2ª Ordem 
+            popt2, _ = curve_fit(func_2a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred2 = func_2a_ordem(t, *popt2)
-            mse2 = np.mean((c - c_pred2)**2)  # Cálculo do MSE via NumPy
+            mse2 = np.mean((c - c_pred2)**2)
             
             best_fit = "1ª Ordem" if mse1 < mse2 else "2ª Ordem"
             
@@ -46,6 +44,8 @@ class OrdemReacao:
                 '2a_ordem': {'C0': popt2[0], 'k': popt2[1], 'MSE': mse2},
                 'best_fit': best_fit
             }
+        except (RuntimeError, ValueError) as e:
+            self.results = {"erro": f"Falha na convergência matemática: {str(e)}"}
         except Exception as e:
             self.results = {"erro": str(e)}
             
