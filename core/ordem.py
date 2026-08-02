@@ -33,11 +33,12 @@ class OrdemReacao(BaseAnalise):
         p0_guess = [c[0], 0.001]
         
         try:
+            
             popt1, _ = curve_fit(func_1a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred1 = func_1a_ordem(t, *popt1)
             mse1 = np.mean((c - c_pred1)**2)
             
-            
+
             popt2, _ = curve_fit(func_2a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred2 = func_2a_ordem(t, *popt2)
             mse2 = np.mean((c - c_pred2)**2)
@@ -63,7 +64,7 @@ class OrdemReacao(BaseAnalise):
         
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
         
-      
+
         if '1a_ordem' in self.results:
             c_fit1 = func_1a_ordem(t_smooth, self.results['1a_ordem']['C0'], self.results['1a_ordem']['k'])
             ax1.plot(t, c, 'ro', label='Experimental')
@@ -74,7 +75,7 @@ class OrdemReacao(BaseAnalise):
         ax1.legend()
         ax1.grid(True, linestyle='--', alpha=0.6)
         
-   
+
         if '2a_ordem' in self.results:
             c_fit2 = func_2a_ordem(t_smooth, self.results['2a_ordem']['C0'], self.results['2a_ordem']['k'])
             ax2.plot(t, c, 'bo', label='Experimental')
