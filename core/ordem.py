@@ -18,6 +18,11 @@ class OrdemReacao(BaseAnalise):
         self.col_c = '[H2O2] (mol/L)'
         
     def process_data(self) -> pd.DataFrame:
+        colunas_necessarias = [self.col_t, self.col_c]
+        for col in colunas_necessarias:
+            if col not in self.df.columns:
+                raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+                
         len_antes = len(self.df)
         self.df = self.df[(self.df[self.col_t] >= 0) & (self.df[self.col_c] > 0)].copy()
         self.linhas_descartadas = len_antes - len(self.df)
@@ -32,7 +37,7 @@ class OrdemReacao(BaseAnalise):
         p0_guess = [c[0], 0.001]
         
         erros_convergencia = []
-       
+        
         try:
             popt1, _ = curve_fit(func_1a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred1 = func_1a_ordem(t, *popt1)
@@ -41,7 +46,6 @@ class OrdemReacao(BaseAnalise):
         except (RuntimeError, ValueError) as e:
             erros_convergencia.append(f"1ª Ordem: {str(e)}")
             
-        
         try:
             popt2, _ = curve_fit(func_2a_ordem, t, c, p0=p0_guess, bounds=([0, 0], [np.inf, np.inf]), maxfev=10000)
             c_pred2 = func_2a_ordem(t, *popt2)
@@ -50,11 +54,9 @@ class OrdemReacao(BaseAnalise):
         except (RuntimeError, ValueError) as e:
             erros_convergencia.append(f"2ª Ordem: {str(e)}")
             
-       
         if '1a_ordem' not in self.results and '2a_ordem' not in self.results:
             return {"erro": f"Falha na convergência matemática geral. Detalhes: {' | '.join(erros_convergencia)}"}
             
-        
         if '1a_ordem' in self.results and '2a_ordem' in self.results:
             self.results['best_fit'] = "1ª Ordem" if self.results['1a_ordem']['MSE'] < self.results['2a_ordem']['MSE'] else "2ª Ordem"
         elif '1a_ordem' in self.results:
