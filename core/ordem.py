@@ -18,10 +18,8 @@ class OrdemReacao(BaseAnalise):
         self.col_c = '[H2O2] (mol/L)'
         
     def process_data(self) -> pd.DataFrame:
-        colunas_necessarias = [self.col_t, self.col_c]
-        for col in colunas_necessarias:
-            if col not in self.df.columns:
-                raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+  
+        self.validate_columns([self.col_t, self.col_c])
                 
         len_antes = len(self.df)
         self.df = self.df[(self.df[self.col_t] >= 0) & (self.df[self.col_c] > 0)].copy()
@@ -34,7 +32,17 @@ class OrdemReacao(BaseAnalise):
             
         t = self.df[self.col_t].values
         c = self.df[self.col_c].values
-        p0_guess = [c[0], 0.001]
+        
+        c0_guess = c[0]
+        if len(t) > 1 and t[-1] > t[0] and c[0] > 0 and c[-1] > 0:
+            # Estimativa simples por aproximação linear da taxa inicial: -dC/dt / C0
+            taxa_aprox = max(1e-6, (c[0] - c[1]) / (t[1] - t[0]))
+            k_guess = max(1e-6, taxa_aprox / c[0])
+        else:
+            k_guess = 0.001
+            
+        p0_guess = [c0_guess, k_guess]
+  
         
         erros_convergencia = []
         
