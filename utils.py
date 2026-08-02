@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-# CONSTANTES FÍSICO-QUÍMICAS
-
 CONSTANTE_R_GASES = 8.314  # J/(mol.K)
 
 def render_download_button(df: pd.DataFrame, filename: str) -> None:
@@ -30,12 +27,14 @@ def renderizar_resultados(modulo: str, parametros: dict, grafico, df_resultados:
         
         if modulo == "Isotermas de Adsorção":
             if modelo_escolhido == "Freundlich":
-                n_str = f"{parametros.get('n', 0):.4f}" if parametros.get('n') is not None else "Indefinido (nulo)"
+                n_str = f"{parametros.get('n', 0):.4f}" if parametros.get('n') is not None else "Indefinido"
                 st.write(f"**K:** {parametros.get('K', 0):.4f}")
                 st.write(f"**n:** {n_str}")
             elif modelo_escolhido == "Langmuir":
-                st.write(f"**$q_{{max}}$:** {parametros.get('q_max', 0):.4f} g/g")
-                st.write(f"**$K_L$:** {parametros.get('K_L', 0):.4f} L/mol")
+                qmax_str = f"{parametros.get('q_max', 0):.4f} g/g" if parametros.get('q_max') is not None else "Inválido (Inconsistente)"
+                kl_str = f"{parametros.get('K_L', 0):.4f} L/mol" if parametros.get('K_L') is not None else "Inválido"
+                st.write(f"**$q_{{max}}$:** {qmax_str}")
+                st.write(f"**$K_L$:** {kl_str}")
             st.write(f"**$R^2$:** {parametros.get('R2', 0):.4f}")
             
         elif modulo == "Cinética (Arrhenius)":
