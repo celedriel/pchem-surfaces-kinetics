@@ -25,16 +25,18 @@ if modulo == "Isotermas de Adsorção":
     modelo_escolhido = st.radio("Selecione o modelo matemático:", ["Freundlich", "Langmuir"], horizontal=True)
     st.divider()
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
-        massa_molar = st.number_input("Massa Molar do Ácido (g/mol)", min_value=0.01, value=60.05)
+        massa_molar = st.number_input("Massa Molar do Adsorvato (g/mol)", min_value=0.01, value=60.05)
     with col2:
         conc_titulante = st.number_input("Concentração do Titulante (mol/L)", min_value=0.001, value=0.1)
+    with col3:
+        fator_esteq = st.number_input("Fator Estequiométrico (Titulante/Titulado)", min_value=0.01, value=1.0)
 
     st.subheader("Tabela de Dados Experimentais")
     if 'df_iso' not in st.session_state:
         st.session_state.df_iso = pd.DataFrame({
-            "Amostra": [1, 2, 3, 4], "Massa_Carvao": [0.5, 0.5, 0.5, 0.5],
+            "Amostra": [1, 2, 3, 4], "Massa_Adsorvente": [0.5, 0.5, 0.5, 0.5],
             "Vol_Total": [50.0, 50.0, 50.0, 50.0], "Conc_Inicial": [0.1, 0.05, 0.025, 0.0125],
             "Vol_Aliquota": [10.0, 10.0, 10.0, 10.0], "Vol_Gasto": [8.5, 3.8, 1.6, 0.6]
         })
@@ -43,11 +45,11 @@ if modulo == "Isotermas de Adsorção":
 
     if st.button("Processar Dados", type="primary"):
         with st.spinner("Modelando isoterma..."):
-            analise = IsotermaAdsorcao(df_editado_iso, massa_molar, conc_titulante)
+            analise = IsotermaAdsorcao(df_editado_iso, massa_molar, conc_titulante, fator_esteq)
             df_resultados = analise.process_data()
             
             if analise.linhas_descartadas > 0:
-                st.warning(f"Atenção: {analise.linhas_descartadas} linha(s) descartada(s) por valores inválidos.")
+                st.warning(f"Atenção: {analise.linhas_descartadas} linha(s) descartada(s) por valores inválidos ou erros físicos de bancada.")
 
             if not df_resultados.empty:
                 parametros = analise.fit_model(modelo_escolhido)
@@ -58,7 +60,7 @@ if modulo == "Isotermas de Adsorção":
                     st.success(f"Análise concluída usando o modelo de **{modelo_escolhido}**!")
                     utils.renderizar_resultados(modulo, parametros, grafico, df_resultados, "isotermas_resultados.csv", modelo_escolhido)
             else:
-                st.error("Erro: Preencha a tabela com valores válidos. Nenhuma linha restou após a filtragem.")
+                st.error("Erro: Preencha a tabela com valores experimentais válidos. Nenhuma linha restou após os filtros de consistência.")
 
 
 # MÓDULO 2: ARRHENIUS
