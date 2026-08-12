@@ -6,21 +6,28 @@ from typing import Dict, Any
 from .base import BaseAnalise
 
 class IsotermaAdsorcao(BaseAnalise):
-    def __init__(self, df_raw: pd.DataFrame, molar_mass: float, titrant_conc: float) -> None:
+    
+    def __init__(self, df_raw: pd.DataFrame, molar_mass: float, titrant_conc: float, fator_esteq: float = 1.0) -> None:
         super().__init__(df_raw)
         self.molar_mass = molar_mass
         self.titrant_conc = titrant_conc
+        self.fator_esteq = fator_esteq
         
     def process_data(self) -> pd.DataFrame:
         
-        self.validate_columns(['Massa_Carvao', 'Vol_Total', 'Conc_Inicial', 'Vol_Aliquota', 'Vol_Gasto'])
+        self.validate_columns(['Massa_Adsorvente', 'Vol_Total', 'Conc_Inicial', 'Vol_Aliquota', 'Vol_Gasto'])
                 
-        self.df['Conc_Final'] = (self.df['Vol_Gasto'] * self.titrant_conc) / self.df['Vol_Aliquota']
-        self.df['X_Adsorvido'] = (self.df['Conc_Inicial'] - self.df['Conc_Final']) * (self.df['Vol_Total'] / 1000) * self.molar_mass
-        self.df['X_m'] = self.df['X_Adsorvido'] / self.df['Massa_Carvao']
-        
         len_antes = len(self.df)
+        
+        self.df = self.df[(self.df['Vol_Aliquota'] > 0) & (self.df['Massa_Adsorvente'] > 0)].copy()
+                
+        self.df['Conc_Final'] = (self.df['Vol_Gasto'] * self.titrant_conc * self.fator_esteq) / self.df['Vol_Aliquota']
+        
+        self.df['X_Adsorvido'] = (self.df['Conc_Inicial'] - self.df['Conc_Final']) * (self.df['Vol_Total'] / 1000) * self.molar_mass
+        self.df['X_m'] = self.df['X_Adsorvido'] / self.df['Massa_Adsorvente']
+        
         self.df = self.df[(self.df['Conc_Final'] > 0) & (self.df['X_m'] > 0)].copy()
+        
         self.linhas_descartadas = len_antes - len(self.df)
         
         self.df['log_C'] = np.log10(self.df['Conc_Final'])
