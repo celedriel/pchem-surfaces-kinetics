@@ -8,11 +8,19 @@ class BaseAnalise(ABC):
         self.df = df.copy()
         self.results: Dict[str, Any] = {}
         self.linhas_descartadas: int = 0
+        self.linhas_vazias: int = 0
 
     def validate_columns(self, required_columns: List[str]) -> None:
         for col in required_columns:
+
             if col not in self.df.columns:
                 raise ValueError(f"Coluna obrigatória ausente na tabela: '{col}'")
+
+            self.df[col] = pd.to_numeric(self.df[col], errors="coerce")
+
+        len_antes = len(self.df)
+        self.df = self.df.dropna(subset=required_columns)
+        self.linhas_vazias = len_antes - len(self.df)
 
     @abstractmethod
     def process_data(self) -> pd.DataFrame:
