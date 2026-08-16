@@ -65,6 +65,9 @@ if modulo == "Isotermas de Adsorção":
             )
             df_resultados = analise.process_data()
 
+            if analise.linhas_vazias > 0:
+                st.warning(f"{analise.linhas_vazias} linha(s) vazia(s) ignorada(s).")
+
             if analise.linhas_descartadas > 0:
                 st.warning(
                     f"Atenção: {analise.linhas_descartadas} linha(s) descartada(s) por valores inválidos ou erros físicos de bancada."
@@ -125,6 +128,9 @@ elif modulo == "Cinética (Arrhenius)":
             analise = CineticaArrhenius(df_editado_arr)
             df_resultados = analise.process_data()
 
+            if analise.linhas_vazias > 0:
+                st.warning(f"{analise.linhas_vazias} linha(s) vazia(s) ignorada(s).")
+
             if analise.linhas_descartadas > 0:
                 st.warning(
                     f"Atenção: {analise.linhas_descartadas} linha(s) descartada(s)."
@@ -171,6 +177,9 @@ elif modulo == "Ordem de Reação":
         with st.spinner("Convergindo regressões não-lineares..."):
             analise = OrdemReacao(df_editado_ord)
             df_resultados = analise.process_data()
+
+            if analise.linhas_vazias > 0:
+                st.warning(f"{analise.linhas_vazias} linha(s) vazia(s) ignorada(s).")
 
             if analise.linhas_descartadas > 0:
                 st.warning(
