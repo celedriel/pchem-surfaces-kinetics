@@ -2,6 +2,7 @@ import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List
 
+
 class BaseAnalise(ABC):
     def __init__(self, df: pd.DataFrame) -> None:
         self.df = df.copy()
