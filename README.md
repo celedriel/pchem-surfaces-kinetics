@@ -110,7 +110,7 @@ Siga o passo a passo abaixo para rodar o painel de Físico-Química no seu pc:
 **1. Abra o seu terminal e clone este projeto para o seu computador.**
 
 ```Bash
-git clone [https://github.com/celedriel/pchem-surfaces-kinetics.git](https://github.com/celedriel/pchem-surfaces-kinetics.git)
+git clone (https://github.com/celedriel/pchem-surfaces-kinetics.git)
 ```
 **2. Navegue até o diretório do projeto.**
 
